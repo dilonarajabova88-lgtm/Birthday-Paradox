@@ -1,0 +1,72 @@
+import datetime, random
+
+def getBirthdays(numberOfBirthdays):
+    birthdays = []
+    for i in range(numberOfBirthdays):
+        startOfYear = datetime.date(2001, 1, 1)
+        randomNumberOfDays = datetime.timedelta(random.randint(0, 364))
+        birthday = startOfYear + randomNumberOfDays 
+        birthdays.append(birthday)
+    return birthdays  
+
+def getMatch(birthdays):
+    if len(birthdays) == len(set(birthdays)):
+        return None  
+
+    for a, birthdayA in enumerate(birthdays):
+        for birthdayB in birthdays[a + 1:]:
+            if birthdayA == birthdayB:
+                return birthdayA
+
+def main():
+    MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+    while True:
+        print('How many birthdays shall I generate? (Max 100)')
+        response = input('> ')
+        if response.isdecimal() and (0 < int(response) <= 100): 
+            numBirthdays = int(response)
+            break
+
+    print(f'\nHere are {numBirthdays} birthdays:')
+    birthdays = getBirthdays(numBirthdays)
+    for i, birthday in enumerate(birthdays):
+        monthName = MONTHS[birthday.month - 1]
+        dateText = f'{monthName} {birthday.day}'
+        print(dateText)
+
+    print()
+    match = getMatch(birthdays)
+    print('In this simulation, ', end='')
+
+    if match != None:
+        monthName = MONTHS[match.month - 1] 
+        dateText = f'{monthName} {match.day}'
+        print('multiple people have a birthday on', dateText)
+    else:
+        print('there are no matching birthdays.')
+
+    print('\nGenerating', numBirthdays, 'random birthdays 100,000 times...')
+    input('Press Enter to begin...')
+
+    print('Running 100,000 simulations...')
+    simMatch = 0
+    for i in range(100_000):
+        if i % 10_000 == 0:
+            print(i, 'simulations run...')
+        birthdays = getBirthdays(numBirthdays)
+        if getMatch(birthdays) != None:
+            simMatch += 1
+
+    print('100,000 simulations complete.\n')
+
+    probability = round(simMatch / 100_000 * 100, 2)      
+    print(f'Out of 100,000 simulations of {numBirthdays} people, there was a')
+    print(f'matching birthday in that group {simMatch} times. This means')
+    print(f'that {numBirthdays} people have a {probability}% chance of')
+    print('having a matching birthday in their group.')
+    print("That's probably more than you would think!")
+
+if __name__ == "__main__":
+    main()
